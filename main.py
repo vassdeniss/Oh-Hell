@@ -11,6 +11,8 @@ GREEN = (39, 119, 20)
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Ohil")
 
+card_image = pygame.transform.scale(pygame.image.load('./cards/2_of_clubs.png'), (150, 105))
+
 def main():
     running = True
 
@@ -20,6 +22,8 @@ def main():
                 running = False
 
         window.fill(GREEN)
+
+        window.blit(card_image, (100, 100))
 
         pygame.display.flip()
 
