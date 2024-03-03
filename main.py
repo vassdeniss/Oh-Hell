@@ -1,6 +1,8 @@
 import pygame
 import sys
 
+from Card import Card
+
 pygame.init()
 
 WINDOW_WIDTH = 800
@@ -11,7 +13,9 @@ GREEN = (39, 119, 20)
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Ohil")
 
-card_image = pygame.transform.scale(pygame.image.load('./cards/2_of_clubs.png'), (150, 105))
+ace_of_spades = Card("ace", "spades")
+two_of_clubs = Card("2", "clubs")
+
 
 def main():
     running = True
@@ -23,7 +27,8 @@ def main():
 
         window.fill(GREEN)
 
-        window.blit(card_image, (100, 100))
+        ace_of_spades.draw(window, 100, 100)
+        two_of_clubs.draw(window, 500, 100)
 
         pygame.display.flip()
 
