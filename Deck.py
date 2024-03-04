@@ -36,3 +36,7 @@ class Deck:
             return self.cards.pop()
         else:
             return None
+
+    def test(self):
+        for card in self.cards:
+            print(f'{card.rank} - {card.suit}')
