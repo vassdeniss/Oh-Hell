@@ -32,6 +32,7 @@ def deal_round(hands):
     for hand in hands:
         for i in range(game_round):
             hand.add_card(deck.deal_card())
+        hand.sort_cards_by_suit_and_rank()
 
 
 def main():
@@ -51,7 +52,7 @@ def main():
             deal_round([player_one, player_two, player_three, player_four])
             round_start = False
 
-        player_one.draw(window)
+        player_one.draw(window, is_main_deck=True)
         player_two.draw(window, vertical=True, should_hide=True)
         player_three.draw(window, vertical=True, should_hide=True)
         player_four.draw(window, should_hide=True)
