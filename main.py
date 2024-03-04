@@ -5,6 +5,7 @@ import sys
 
 from Deck import Deck
 from Hand import Hand
+from Stack import Stack
 
 pygame.init()
 
@@ -18,9 +19,7 @@ pygame.display.set_caption("Oh Hell")
 
 deck = Deck()
 
-deck.test()
-
-game_round = 13
+game_round = 7
 
 player_one = Hand((300, 700))
 player_two = Hand((50, 250))
@@ -30,7 +29,7 @@ player_four = Hand((300, 50))
 main_player = player_one
 current_player = player_one
 
-middle_cards = []
+stack = Stack(WINDOW_WIDTH, WINDOW_HEIGHT)
 
 
 def deal_round(hands):
@@ -40,9 +39,25 @@ def deal_round(hands):
         hand.sort_cards_by_suit_and_rank()
 
 
+def round_end():
+    return False
+    # check if empty hands on all players
+
+
+def next_round():
+    global game_round
+
+    game_round += 1
+    deck.reset()
+    stack.clear()
+
+
 def main():
+    global game_round
+
     running = True
     round_start = True
+    trump = None
 
     while running:
         selected_card = None
@@ -61,21 +76,25 @@ def main():
 
         if round_start:
             deal_round([player_one, player_two, player_three, player_four])
+            trump = deck.deal_card()
             round_start = False
 
         if selected_card is not None:
-            angle = random.randint(-60, 60)
-            rotated = pygame.transform.rotate(selected_card.front_image, angle)
-            middle_cards.append(rotated)
+            stack.add_to_stack(selected_card)
             current_player.remove_card(selected_card)
+
+        deck.draw_trump(trump, window)
 
         player_one.draw(window)
         player_two.draw(window, vertical=True, should_hide=True)
         player_three.draw(window, vertical=True, should_hide=True)
         player_four.draw(window, should_hide=True)
 
-        for card in middle_cards:
-            window.blit(card, ((1200 - card.get_rect().width) / 2, (900 - card.get_rect().height) / 2))
+        stack.draw(window)
+
+        if round_end():
+            round_start = True
+            next_round()
 
         pygame.display.flip()
 
