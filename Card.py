@@ -7,13 +7,14 @@ class Card:
         self.rank = rank
         self.suit = suit
         self.front_image = get_card_image(self.rank, self.suit)
-        #self.back_image = back_image
+        self.back_image = get_card_image()
         self.is_face_up = False
 
     def flip(self):
         self.is_face_up = not self.is_face_up
 
-    def draw(self, surface, x, y):
-        #surface.blit(self.front_image if self.is_face_up else self.back_image, (x, y))
-        surface.blit(self.front_image, (x, y))
+    def draw(self, surface, coords, vertical=False, should_hide=False):
+        image = self.front_image if not should_hide else self.back_image
+        image = image if not vertical else pygame.transform.rotate(image, 90)
 
+        surface.blit(image, coords)
