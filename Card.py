@@ -13,11 +13,11 @@ class Card:
     def flip(self):
         self.is_face_up = not self.is_face_up
 
-    def draw(self, surface, coords, vertical=False, should_hide=False, is_main_deck=False):
+    def draw(self, surface, coords, vertical=False, should_hide=False):
         image = self.front_image if not should_hide else self.back_image
         image = image if not vertical else pygame.transform.rotate(image, 90)
 
-        if is_main_deck and pygame.Rect(coords[0], coords[1], image.get_rect().width - 70, image.get_rect().height).collidepoint(pygame.mouse.get_pos()):
+        if self.is_face_up and pygame.Rect(coords[0], coords[1], image.get_rect().width - 70, image.get_rect().height).collidepoint(pygame.mouse.get_pos()):
             coords = (coords[0], coords[1] - 20)
 
         surface.blit(image, coords)

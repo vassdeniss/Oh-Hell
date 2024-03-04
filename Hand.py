@@ -12,14 +12,15 @@ class Hand:
     def clear(self):
         self.cards.clear()
 
-    def draw(self, surface, spacing=10, vertical=False, should_hide=False, is_main_deck=False):
+    def draw(self, surface, spacing=10, vertical=False, should_hide=False):
         for i, card in enumerate(self.cards):
+            card.is_face_up = not should_hide
             modified_coords = \
                 (
                     self.coords[0] if vertical else self.coords[0] + i * (30 + spacing),
                     self.coords[1] + i * (20 + spacing) if vertical else self.coords[1]
                 )
-            card.draw(surface, modified_coords, vertical, should_hide, is_main_deck)
+            card.draw(surface, modified_coords, vertical, should_hide)
 
     def sort_cards_by_suit_and_rank(self):
         if len(self.cards) < 2:

@@ -52,7 +52,7 @@ def main():
             deal_round([player_one, player_two, player_three, player_four])
             round_start = False
 
-        player_one.draw(window, is_main_deck=True)
+        player_one.draw(window)
         player_two.draw(window, vertical=True, should_hide=True)
         player_three.draw(window, vertical=True, should_hide=True)
         player_four.draw(window, should_hide=True)
