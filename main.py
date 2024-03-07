@@ -26,6 +26,8 @@ player_two = Hand((50, 250))
 player_three = Hand((1000, 250))
 player_four = Hand((300, 50))
 
+PLAYERS = [player_one, player_two, player_three, player_four]
+
 main_player = player_one
 current_player = player_one
 
@@ -39,9 +41,12 @@ def deal_round(hands):
         hand.sort_cards_by_suit_and_rank()
 
 
-def round_end():
-    return False
-    # check if empty hands on all players
+def round_end(hands):
+    #for hand in hands:
+    if len(hands[0].cards) > 0:
+        return False
+
+    return True
 
 
 def next_round():
@@ -75,7 +80,7 @@ def main():
         deck.draw(window)
 
         if round_start:
-            deal_round([player_one, player_two, player_three, player_four])
+            deal_round(PLAYERS)
             trump = deck.deal_card()
             round_start = False
 
@@ -92,7 +97,7 @@ def main():
 
         stack.draw(window)
 
-        if round_end():
+        if round_end(PLAYERS):
             round_start = True
             next_round()
 
