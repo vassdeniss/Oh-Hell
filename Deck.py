@@ -1,8 +1,8 @@
 import pygame
 import random
 
+import loader
 from Card import Card
-from Util import get_card_image
 
 
 def create_deck():
@@ -34,11 +34,11 @@ class Deck:
 
     # noinspection PyMethodMayBeStatic
     def draw(self, surface):
-        surface.blit(get_card_image(), (50, 50))
+        surface.blit(loader.get_card('back', 'back'), (50, 50))
 
         font = pygame.font.Font(None, 30)
         text = font.render("Deck", True, (255, 255, 255))
         surface.blit(text, (80, 20))
 
     def draw_trump(self, trump, surface):
-        surface.blit(trump.front_image, (100, 50))
+        surface.blit(loader.get_card(trump.rank, trump.suit), (100, 50))

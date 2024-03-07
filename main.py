@@ -60,11 +60,17 @@ def next_round():
 def main():
     global game_round
 
+    loader.load_cards()
+
+    clock = pygame.time.Clock()
+
     running = True
     round_start = True
     trump = None
 
     while running:
+        clock.tick(60)
+
         selected_card = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
