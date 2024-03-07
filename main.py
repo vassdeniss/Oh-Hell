@@ -3,9 +3,11 @@ import random
 import pygame
 import sys
 
+import loader
 from Deck import Deck
 from Hand import Hand
 from Stack import Stack
+from network import Network
 
 pygame.init()
 
@@ -21,10 +23,10 @@ deck = Deck()
 
 game_round = 7
 
-player_one = Hand((300, 700))
-player_two = Hand((50, 250))
-player_three = Hand((1000, 250))
-player_four = Hand((300, 50))
+player_one = Hand()
+player_two = Hand()
+player_three = Hand()
+player_four = Hand()
 
 PLAYERS = [player_one, player_two, player_three, player_four]
 
@@ -42,7 +44,7 @@ def deal_round(hands):
 
 
 def round_end(hands):
-    #for hand in hands:
+    # for hand in hands:
     if len(hands[0].cards) > 0:
         return False
 
@@ -62,6 +64,8 @@ def main():
 
     loader.load_cards()
 
+    n = Network()
+    player = n.get_player()
     clock = pygame.time.Clock()
 
     running = True
@@ -70,6 +74,8 @@ def main():
 
     while running:
         clock.tick(60)
+
+        (player_two, player_three, player_four) = n.send(player)
 
         selected_card = None
         for event in pygame.event.get():
@@ -86,7 +92,7 @@ def main():
         deck.draw(window)
 
         if round_start:
-            deal_round(PLAYERS)
+            deal_round((player, player_two, player_three, player_four))
             trump = deck.deal_card()
             round_start = False
 
@@ -96,14 +102,14 @@ def main():
 
         deck.draw_trump(trump, window)
 
-        player_one.draw(window)
-        player_two.draw(window, vertical=True, should_hide=True)
-        player_three.draw(window, vertical=True, should_hide=True)
-        player_four.draw(window, should_hide=True)
+        player.draw(window, 300, 700)
+        player_two.draw(window, 50, 250, vertical=True, should_hide=True)
+        player_three.draw(window, 300, 50, should_hide=True)
+        player_four.draw(window, 1000, 250, vertical=True, should_hide=True)
 
         stack.draw(window)
 
-        if round_end(PLAYERS):
+        if round_end((player, player_two, player_three, player_four)):
             round_start = True
             next_round()
 
