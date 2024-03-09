@@ -1,13 +1,10 @@
-import random
-
 import pygame
 import sys
 
 import loader
 from Deck import Deck
-from Hand import Hand
 from Stack import Stack
-from network import Network
+from Network import Network
 
 pygame.init()
 
@@ -21,34 +18,18 @@ pygame.display.set_caption("Oh Hell")
 
 deck = Deck()
 
-game_round = 7
-
-player_one = Hand()
-player_two = Hand()
-player_three = Hand()
-player_four = Hand()
-
-PLAYERS = [player_one, player_two, player_three, player_four]
-
-main_player = player_one
-current_player = player_one
+game_round = 2
 
 stack = Stack(WINDOW_WIDTH, WINDOW_HEIGHT)
 
 
-def deal_round(hands):
-    for hand in hands:
-        for i in range(game_round):
-            hand.add_card(deck.deal_card())
-        hand.sort_cards_by_suit_and_rank()
+def deal_round(hand):
+    global game_round
 
-
-def round_end(hands):
-    # for hand in hands:
-    if len(hands[0].cards) > 0:
-        return False
-
-    return True
+    for _ in range(game_round):
+        hand.add_card(deck.deal_card())
+    hand.sort_cards_by_suit_and_rank()
+    game_round += 1
 
 
 def next_round():
@@ -75,14 +56,18 @@ def main():
     while running:
         clock.tick(60)
 
-        (player_two, player_three, player_four) = n.send(player)
+        (player_two, player_three, player_four, should_restart_game) = n.send(player)
+
+        if should_restart_game:
+            deal_round(player)
+            #trump = deck.deal_card()
 
         selected_card = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                for card in current_player.cards:
+                for card in player.cards:
                     selected_card = card.handle_event()
                     if selected_card is not None:
                         break
@@ -91,16 +76,11 @@ def main():
 
         deck.draw(window)
 
-        if round_start:
-            deal_round((player, player_two, player_three, player_four))
-            trump = deck.deal_card()
-            round_start = False
-
         if selected_card is not None:
             stack.add_to_stack(selected_card)
-            current_player.remove_card(selected_card)
+            player.remove_card(selected_card)
 
-        deck.draw_trump(trump, window)
+        # deck.draw_trump(trump, window)
 
         player.draw(window, 300, 700)
         player_two.draw(window, 50, 250, vertical=True, should_hide=True)
@@ -108,10 +88,6 @@ def main():
         player_four.draw(window, 1000, 250, vertical=True, should_hide=True)
 
         stack.draw(window)
-
-        if round_end((player, player_two, player_three, player_four)):
-            round_start = True
-            next_round()
 
         pygame.display.flip()
 

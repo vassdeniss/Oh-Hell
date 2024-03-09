@@ -2,6 +2,8 @@ import pygame
 
 import random
 
+import loader
+
 
 class Stack:
     def __init__(self, width, height):
@@ -22,4 +24,4 @@ class Stack:
 
     def __rotate_card(self, card):
         angle = random.randint(-60, 60)
-        return pygame.transform.rotate(card.front_image, angle)
+        return pygame.transform.rotate(loader.get_card(card.rank, card.suit), angle)
