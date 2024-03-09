@@ -31,14 +31,3 @@ class Deck:
             return self.cards.pop()
         else:
             return None
-
-    # noinspection PyMethodMayBeStatic
-    def draw(self, surface):
-        surface.blit(loader.get_card('back', 'back'), (50, 50))
-
-        font = pygame.font.Font(None, 30)
-        text = font.render("Deck", True, (255, 255, 255))
-        surface.blit(text, (80, 20))
-
-    def draw_trump(self, trump, surface):
-        surface.blit(loader.get_card(trump.rank, trump.suit), (100, 50))

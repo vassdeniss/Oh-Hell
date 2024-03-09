@@ -27,23 +27,33 @@ except socket.error as err:
 s.listen(4)
 print("Server started, waiting for connections...")
 
-should_restart_game = False
-
 
 def initial_deal():
+    global trump
+    
     for hand in players:
         hand.add_card(deck.deal_card())
+    trump = deck.deal_card()
 
 
 def is_round_end():
+    global has_deck_reset
+
     for hand in players:
         if len(hand.cards) > 0:
+            has_deck_reset = False
             return False
     return True
 
 
+has_deck_reset = False
+game_round = 2
+trump = None
+
+
 def threaded_client(connection, player):
-    global should_restart_game
+    global game_round, trump
+    global has_deck_reset
 
     connection.send(pickle.dumps(players[player]))
     reply = ""
@@ -56,17 +66,26 @@ def threaded_client(connection, player):
                 print("Disconneccted")
                 break
             else:
-                if player == 0:
-                    reply = (players[1], players[2], players[3], is_round_end())
-                elif player == 1:
-                    reply = (players[2], players[3], players[0], is_round_end())
-                elif player == 2:
-                    reply = (players[3], players[0], players[1], is_round_end())
-                else:
-                    reply = (players[0], players[1], players[2], is_round_end())
+                cards = []
+                if is_round_end():
+                    if not has_deck_reset:
+                        deck.reset()
+                        has_deck_reset = True
+                        trump = None
+                    for _ in range(game_round):
+                        cards.append(deck.deal_card())
 
-                print(f"Received: {data}")
-                print(f"Sending: {reply}")
+                if sum(len(hand.cards) for hand in players) == game_round * 4 and trump is None:
+                    trump = deck.deal_card()
+
+                if player == 0:
+                    reply = (players[1], players[2], players[3], cards, trump)
+                elif player == 1:
+                    reply = (players[2], players[3], players[0], cards, trump)
+                elif player == 2:
+                    reply = (players[3], players[0], players[1], cards, trump)
+                else:
+                    reply = (players[0], players[1], players[2], cards, trump)
 
             connection.sendall(pickle.dumps(reply))
         except:

@@ -23,13 +23,10 @@ game_round = 2
 stack = Stack(WINDOW_WIDTH, WINDOW_HEIGHT)
 
 
-def deal_round(hand):
-    global game_round
-
-    for _ in range(game_round):
-        hand.add_card(deck.deal_card())
+def deal_round(cards, hand):
+    for i in range(len(cards)):
+        hand.add_card(cards[i])
     hand.sort_cards_by_suit_and_rank()
-    game_round += 1
 
 
 def next_round():
@@ -38,6 +35,13 @@ def next_round():
     game_round += 1
     deck.reset()
     stack.clear()
+
+
+def draw_deck():
+    window.blit(loader.get_card('back', 'back'), (50, 50))
+    font = pygame.font.Font(None, 30)
+    text = font.render("Deck", True, (255, 255, 255))
+    window.blit(text, (80, 20))
 
 
 def main():
@@ -50,17 +54,14 @@ def main():
     clock = pygame.time.Clock()
 
     running = True
-    round_start = True
-    trump = None
 
     while running:
         clock.tick(60)
 
-        (player_two, player_three, player_four, should_restart_game) = n.send(player)
+        (player_two, player_three, player_four, cards, trump) = n.send(player)
 
-        if should_restart_game:
-            deal_round(player)
-            #trump = deck.deal_card()
+        if len(cards) > 0:
+            deal_round(cards, player)
 
         selected_card = None
         for event in pygame.event.get():
@@ -74,13 +75,14 @@ def main():
 
         window.fill(GREEN)
 
-        deck.draw(window)
+        draw_deck()
 
         if selected_card is not None:
             stack.add_to_stack(selected_card)
             player.remove_card(selected_card)
 
-        # deck.draw_trump(trump, window)
+        if trump is not None:
+            window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
 
         player.draw(window, 300, 700)
         player_two.draw(window, 50, 250, vertical=True, should_hide=True)
