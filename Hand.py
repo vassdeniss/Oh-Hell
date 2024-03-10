@@ -1,6 +1,7 @@
 class Hand:
     def __init__(self):
         self.cards = []
+        self.last_played_card = None
 
     def add_card(self, card):
         self.cards.append(card)

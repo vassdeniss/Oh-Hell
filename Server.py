@@ -2,10 +2,13 @@ import pickle
 import socket
 from _thread import start_new_thread
 
+import loader
 from Deck import Deck
 from Hand import Hand
+from Pile import Pile
 
 deck = Deck()
+pile = Pile(1200, 900)
 
 player_one = Hand()
 player_two = Hand()
@@ -30,7 +33,7 @@ print("Server started, waiting for connections...")
 
 def initial_deal():
     global trump
-    
+
     for hand in players:
         hand.add_card(deck.deal_card())
     trump = deck.deal_card()
@@ -47,13 +50,12 @@ def is_round_end():
 
 
 has_deck_reset = False
-game_round = 2
+game_round = 1
 trump = None
 
 
 def threaded_client(connection, player):
-    global game_round, trump
-    global has_deck_reset
+    global game_round, trump, has_deck_reset
 
     connection.send(pickle.dumps(players[player]))
     reply = ""
@@ -62,16 +64,21 @@ def threaded_client(connection, player):
             data = pickle.loads(connection.recv(2048))
             players[player] = data
 
+            if players[player].last_played_card is not None:
+                pile.add(players[player].last_played_card)
+
             if not data:
-                print("Disconneccted")
+                print("Disconnected")
                 break
             else:
                 cards = []
                 if is_round_end():
+                    pile.clear()
                     if not has_deck_reset:
                         deck.reset()
                         has_deck_reset = True
                         trump = None
+                        game_round += 1
                     for _ in range(game_round):
                         cards.append(deck.deal_card())
 
@@ -79,13 +86,13 @@ def threaded_client(connection, player):
                     trump = deck.deal_card()
 
                 if player == 0:
-                    reply = (players[1], players[2], players[3], cards, trump)
+                    reply = (players[1], players[2], players[3], cards, trump, pile)
                 elif player == 1:
-                    reply = (players[2], players[3], players[0], cards, trump)
+                    reply = (players[2], players[3], players[0], cards, trump, pile)
                 elif player == 2:
-                    reply = (players[3], players[0], players[1], cards, trump)
+                    reply = (players[3], players[0], players[1], cards, trump, pile)
                 else:
-                    reply = (players[0], players[1], players[2], cards, trump)
+                    reply = (players[0], players[1], players[2], cards, trump, pile)
 
             connection.sendall(pickle.dumps(reply))
         except:

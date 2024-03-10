@@ -2,12 +2,14 @@ import pygame
 
 import loader
 
+
 class Card:
     def __init__(self, rank, suit):
         self.rank = rank
         self.suit = suit
         self.is_face_up = False
         self.clickable_rect = None
+        self.angle = 0
 
     def flip(self):
         self.is_face_up = not self.is_face_up
