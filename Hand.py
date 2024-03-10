@@ -1,3 +1,8 @@
+import pygame.font
+
+from constants import WINDOW_WIDTH
+
+
 class Hand:
     def __init__(self):
         self.cards = []
@@ -12,7 +17,7 @@ class Hand:
     def clear(self):
         self.cards.clear()
 
-    def draw(self, surface, x, y, spacing=10, vertical=False, should_hide=False):
+    def draw(self, surface, x, y, is_dealer=False, spacing=10, vertical=False, should_hide=False):
         for i, card in enumerate(self.cards):
             card.is_face_up = not should_hide
             modified_coords = \
@@ -21,6 +26,10 @@ class Hand:
                     y + i * (20 + spacing) if vertical else y
                 )
             card.draw(surface, modified_coords, vertical, should_hide)
+        if is_dealer:
+            font = pygame.font.Font(None, 30)
+            text = font.render("Your turn", True, (255, 255, 255))
+            surface.blit(text, (WINDOW_WIDTH / 2 - 100, y - 50))
 
     def sort_cards_by_suit_and_rank(self):
         if len(self.cards) < 2:

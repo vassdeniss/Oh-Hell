@@ -2,13 +2,10 @@ import pygame
 import sys
 
 import loader
-from Deck import Deck
 from Network import Network
+from constants import WINDOW_WIDTH, WINDOW_HEIGHT
 
 pygame.init()
-
-WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 900
 
 GREEN = (39, 119, 20)
 
@@ -41,7 +38,7 @@ def main():
     while running:
         clock.tick(60)
 
-        (player_two, player_three, player_four, cards, trump, pile) = n.send(player)
+        (player_two, player_three, player_four, cards, trump, pile, is_dealer) = n.send(player)
 
         if len(cards) > 0:
             deal_round(cards, player)
@@ -51,11 +48,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                for card in player.cards:
-                    selected_card = card.handle_event()
-                    if selected_card is not None:
-                        break
+            if is_dealer:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for card in player.cards:
+                        selected_card = card.handle_event()
+                        if selected_card is not None:
+                            break
 
         window.fill(GREEN)
 
@@ -68,7 +66,7 @@ def main():
         if trump is not None:
             window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
 
-        player.draw(window, 300, 700)
+        player.draw(window, 300, 700, is_dealer)
         player_two.draw(window, 50, 250, vertical=True, should_hide=True)
         player_three.draw(window, 300, 50, should_hide=True)
         player_four.draw(window, 1000, 250, vertical=True, should_hide=True)

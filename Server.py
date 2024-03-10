@@ -1,14 +1,14 @@
 import pickle
+import random
 import socket
 from _thread import start_new_thread
 
-import loader
 from Deck import Deck
 from Hand import Hand
 from Pile import Pile
 
 deck = Deck()
-pile = Pile(1200, 900)
+pile = Pile()
 
 player_one = Hand()
 player_two = Hand()
@@ -55,7 +55,7 @@ trump = None
 
 
 def threaded_client(connection, player):
-    global game_round, trump, has_deck_reset
+    global game_round, trump, has_deck_reset, dealer
 
     connection.send(pickle.dumps(players[player]))
     reply = ""
@@ -65,7 +65,9 @@ def threaded_client(connection, player):
             players[player] = data
 
             if players[player].last_played_card is not None:
-                pile.add(players[player].last_played_card)
+                has_played = pile.add(players[player].last_played_card)
+                if has_played and player == dealer:
+                    dealer = (dealer + 1) % 4
 
             if not data:
                 print("Disconnected")
@@ -86,13 +88,13 @@ def threaded_client(connection, player):
                     trump = deck.deal_card()
 
                 if player == 0:
-                    reply = (players[1], players[2], players[3], cards, trump, pile)
+                    reply = (players[1], players[2], players[3], cards, trump, pile, True if dealer == 0 else False)
                 elif player == 1:
-                    reply = (players[2], players[3], players[0], cards, trump, pile)
+                    reply = (players[2], players[3], players[0], cards, trump, pile, True if dealer == 1 else False)
                 elif player == 2:
-                    reply = (players[3], players[0], players[1], cards, trump, pile)
+                    reply = (players[3], players[0], players[1], cards, trump, pile, True if dealer == 2 else False)
                 else:
-                    reply = (players[0], players[1], players[2], cards, trump, pile)
+                    reply = (players[0], players[1], players[2], cards, trump, pile, True if dealer == 3 else False)
 
             connection.sendall(pickle.dumps(reply))
         except:
@@ -104,6 +106,7 @@ def threaded_client(connection, player):
 
 current_player = 0
 initial_deal()
+dealer = random.randint(0, 3)
 while True:
     connection, address = s.accept()
     print(f"Connected to {address}")
