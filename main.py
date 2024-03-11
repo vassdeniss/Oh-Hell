@@ -3,7 +3,7 @@ import sys
 
 import loader
 from Network import Network
-from constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT
 
 pygame.init()
 
@@ -26,6 +26,36 @@ def draw_deck():
     window.blit(text, (80, 20))
 
 
+def draw_played_cards(surface, cards):
+    center_x = WINDOW_WIDTH / 2 - CARD_WIDTH / 2
+    center_x_vertical = WINDOW_WIDTH / 2 - CARD_HEIGHT / 2
+    center_y = WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2
+    center_y_vertical = WINDOW_HEIGHT / 2 - CARD_WIDTH / 2
+
+    player_positions = [
+        (center_x, center_y + CARD_HEIGHT / 2 + 10),  # bottom
+        (center_x_vertical - CARD_HEIGHT / 2 - 10, center_y_vertical),  # left
+        (center_x, center_y - CARD_HEIGHT / 2 - 10),  # top
+        (center_x_vertical + CARD_HEIGHT / 2 + 10, center_y_vertical)  # right
+    ]
+
+    for i, card in enumerate(cards):
+        if card is None:
+            continue
+
+        image = loader.get_card(card.rank, card.suit)
+
+        card_x, card_y = player_positions[i]
+        if i == 1:
+            image = pygame.transform.rotate(image, -90)
+        elif i == 3:
+            image = pygame.transform.rotate(image, 90)
+        elif i == 2:
+            image = pygame.transform.rotate(image, 180)
+
+        surface.blit(image, (card_x, card_y))
+
+
 def main():
     loader.load_cards()
 
@@ -38,7 +68,7 @@ def main():
     while running:
         clock.tick(60)
 
-        (player_two, player_three, player_four, cards, trump, pile, is_dealer) = n.send(player)
+        (player_two, player_three, player_four, cards, trump, is_dealer) = n.send(player)
 
         if len(cards) > 0:
             deal_round(cards, player)
@@ -48,12 +78,11 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if is_dealer:
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    for card in player.cards:
-                        selected_card = card.handle_event()
-                        if selected_card is not None:
-                            break
+            if is_dealer and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for card in player.cards:
+                    selected_card = card.handle_event()
+                    if selected_card is not None:
+                        break
 
         window.fill(GREEN)
 
@@ -71,7 +100,8 @@ def main():
         player_three.draw(window, 300, 50, should_hide=True)
         player_four.draw(window, 1000, 250, vertical=True, should_hide=True)
 
-        pile.draw(window)
+        draw_played_cards(window, (player.last_played_card, player_two.last_played_card, player_three.last_played_card,
+                                   player_four.last_played_card))
 
         pygame.display.flip()
 

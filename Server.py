@@ -5,10 +5,8 @@ from _thread import start_new_thread
 
 from Deck import Deck
 from Hand import Hand
-from Pile import Pile
 
 deck = Deck()
-pile = Pile()
 
 player_one = Hand()
 player_two = Hand()
@@ -64,10 +62,8 @@ def threaded_client(connection, player):
             data = pickle.loads(connection.recv(2048))
             players[player] = data
 
-            if players[player].last_played_card is not None:
-                has_played = pile.add(players[player].last_played_card)
-                if has_played and player == dealer:
-                    dealer = (dealer + 1) % 4
+            if players[player].last_played_card is not None and player == dealer:
+                dealer = (dealer + 1) % 4
 
             if not data:
                 print("Disconnected")
@@ -75,7 +71,6 @@ def threaded_client(connection, player):
             else:
                 cards = []
                 if is_round_end():
-                    pile.clear()
                     if not has_deck_reset:
                         deck.reset()
                         has_deck_reset = True
@@ -88,13 +83,13 @@ def threaded_client(connection, player):
                     trump = deck.deal_card()
 
                 if player == 0:
-                    reply = (players[1], players[2], players[3], cards, trump, pile, True if dealer == 0 else False)
+                    reply = (players[1], players[2], players[3], cards, trump, True if dealer == 0 else False)
                 elif player == 1:
-                    reply = (players[2], players[3], players[0], cards, trump, pile, True if dealer == 1 else False)
+                    reply = (players[2], players[3], players[0], cards, trump, True if dealer == 1 else False)
                 elif player == 2:
-                    reply = (players[3], players[0], players[1], cards, trump, pile, True if dealer == 2 else False)
+                    reply = (players[3], players[0], players[1], cards, trump, True if dealer == 2 else False)
                 else:
-                    reply = (players[0], players[1], players[2], cards, trump, pile, True if dealer == 3 else False)
+                    reply = (players[0], players[1], players[2], cards, trump, True if dealer == 3 else False)
 
             connection.sendall(pickle.dumps(reply))
         except:
