@@ -1,7 +1,4 @@
-import pygame
 import random
-
-import loader
 from Card import Card
 
 

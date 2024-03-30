@@ -1,4 +1,9 @@
+from pygame import font
+
 WINDOW_WIDTH = 1200
 WINDOW_HEIGHT = 900
 CARD_WIDTH = 105
 CARD_HEIGHT = 150
+LOCAL_IP = "192.168.0.105"
+PORT = 3000
+FONT = font.Font(None, 32)
