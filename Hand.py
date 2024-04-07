@@ -17,7 +17,14 @@ class Hand:
     def clear(self):
         self.cards.clear()
 
-    def draw(self, surface, x, y, is_dealer=False, spacing=10, vertical=False, should_hide=False):
+    def playable_cards(self, last_played_card):
+        if not last_played_card:
+            return self.cards
+
+        return [card for card in self.cards if card.suit == last_played_card.suit]
+
+    def draw(self, surface, x, y, is_dealer=False, spacing=10, vertical=False, should_hide=False,
+             last_played_card=None):
         for i, card in enumerate(self.cards):
             card.is_face_up = not should_hide
             modified_coords = \
@@ -25,7 +32,7 @@ class Hand:
                     x if vertical else x + i * (30 + spacing),
                     y + i * (20 + spacing) if vertical else y
                 )
-            card.draw(surface, modified_coords, vertical, should_hide)
+            card.draw(surface, modified_coords, self.playable_cards(last_played_card), vertical, should_hide)
         if is_dealer:
             text = pygame.font.Font(None, 32).render("Your turn" if self.bid != -1 else "Enter bid", True,
                                                      (255, 255, 255))

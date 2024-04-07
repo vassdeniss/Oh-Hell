@@ -143,10 +143,10 @@ def main():
         if trump is not None:
             window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
 
-        player.draw(window, 300, 700, is_dealer)
-        player_two.draw(window, 50, 250, vertical=True, should_hide=True)
-        player_three.draw(window, 300, 50, should_hide=True)
-        player_four.draw(window, 1000, 250, vertical=True, should_hide=True)
+        player.draw(window, 300, 700, is_dealer, last_played_card=player_four.last_played_card)
+        player_two.draw(window, 50, 250, vertical=True, should_hide=True, last_played_card=player_four.last_played_card)
+        player_three.draw(window, 300, 50, should_hide=True, last_played_card=player_four.last_played_card)
+        player_four.draw(window, 1000, 250, vertical=True, should_hide=True, last_played_card=player_four.last_played_card)
 
         draw_bid(player.bid, window, 300, 600)
         draw_bid(player_two.bid, window, 50, 220)
