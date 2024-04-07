@@ -1,11 +1,11 @@
-from constants import WINDOW_WIDTH, FONT
+import pygame.font
+from constants import WINDOW_WIDTH
 
 
 class Hand:
     def __init__(self):
         self.cards = []
         self.last_played_card = None
-        # final bidder can't sum to game_round
         self.bid = -1
 
     def add_card(self, card):
@@ -27,7 +27,8 @@ class Hand:
                 )
             card.draw(surface, modified_coords, vertical, should_hide)
         if is_dealer:
-            text = FONT.render("Your turn" if self.bid != -1 else "Enter bid", True, (255, 255, 255))
+            text = pygame.font.Font(None, 32).render("Your turn" if self.bid != -1 else "Enter bid", True,
+                                                     (255, 255, 255))
             surface.blit(text, (WINDOW_WIDTH / 2 - 100, y - 50))
 
     def sort_cards_by_suit_and_rank(self):

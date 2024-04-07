@@ -3,7 +3,7 @@ import sys
 
 import loader
 from Network import Network
-from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT, FONT
+from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT
 
 pygame.init()
 
@@ -33,7 +33,7 @@ def deal_round(cards, hand):
 
 def draw_deck():
     window.blit(loader.get_card('back', 'back'), (50, 50))
-    text = FONT.render("Deck", True, (255, 255, 255))
+    text = pygame.font.Font(None, 32).render("Deck", True, (255, 255, 255))
     window.blit(text, (80, 20))
 
 
@@ -68,10 +68,9 @@ def draw_played_cards(surface, cards):
 
 
 def draw_bid(bid, surface, x, y):
-    # TODO: export font
     if bid == -1:
         return
-    text = FONT.render(str(bid), True, (255, 255, 255))
+    text = pygame.font.Font(None, 32).render(str(bid), True, (255, 255, 255))
     surface.blit(text, (x, y))
 
 
@@ -134,7 +133,7 @@ def main():
 
         if player.bid == -1 and is_dealer:
             pygame.draw.rect(window, GRAY, pygame.Rect(300, 600, 50, 32))
-            text_surface = FONT.render(bid_text, True, (255, 255, 255))
+            text_surface = pygame.font.Font(None, 32).render(bid_text, True, (255, 255, 255))
             window.blit(text_surface, (305, 605))
 
         if selected_card is not None:
