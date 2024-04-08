@@ -74,6 +74,16 @@ def draw_bid(bid, surface, x, y):
     surface.blit(text, (x, y))
 
 
+def get_first_played_card(hands):
+    for i in range(1, 4):
+        card = hands[i].last_played_card
+        if card is None:
+            return hands[i - 1].last_played_card
+    if hands[0].last_played_card is None:
+        return hands[3].last_played_card
+    return None
+
+
 bid_text = ''
 total_cards_in_hand_per_round = 5
 
@@ -143,10 +153,14 @@ def main():
         if trump is not None:
             window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
 
-        player.draw(window, 300, 700, is_dealer, last_played_card=player_four.last_played_card)
-        player_two.draw(window, 50, 250, vertical=True, should_hide=True, last_played_card=player_four.last_played_card)
-        player_three.draw(window, 300, 50, should_hide=True, last_played_card=player_four.last_played_card)
-        player_four.draw(window, 1000, 250, vertical=True, should_hide=True, last_played_card=player_four.last_played_card)
+        first_card = get_first_played_card((player, player_four, player_three, player_two))
+        player.draw(window, 300, 700, is_dealer=is_dealer, first_played_card=first_card, trump=trump)
+        player_two.draw(window, 50, 250, vertical=True, should_hide=True,
+                        first_played_card=first_card, trump=trump)
+        player_three.draw(window, 300, 50, should_hide=True, first_played_card=first_card,
+                          trump=trump)
+        player_four.draw(window, 1000, 250, vertical=True, should_hide=True,
+                         first_played_card=first_card, trump=trump)
 
         draw_bid(player.bid, window, 300, 600)
         draw_bid(player_two.bid, window, 50, 220)

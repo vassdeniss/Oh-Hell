@@ -10,9 +10,6 @@ class Card:
         self.clickable_rect = None
         self.is_dark = False
 
-    def flip(self):
-        self.is_face_up = not self.is_face_up
-
     def draw(self, surface, coords, playable_cards=[], vertical=False, should_hide=False):
         image = loader.get_card(self.rank, self.suit) if not should_hide else loader.get_card('back', 'back')
         image = image if not vertical else pygame.transform.rotate(image, 90)
