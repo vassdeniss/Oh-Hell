@@ -10,6 +10,15 @@ class Card:
         self.clickable_rect = None
         self.is_dark = False
 
+    def get_power(self, trump_suit):
+        worded_ranks = {'Jack': 11, 'Queen': 12, 'King': 13, 'Ace': 14}
+
+        power = worded_ranks[self.rank] if self.rank in worded_ranks else int(self.rank)
+        if self.suit == trump_suit:
+            power += 100
+
+        return power
+
     def draw(self, surface, coords, playable_cards=[], vertical=False, should_hide=False):
         image = loader.get_card(self.rank, self.suit) if not should_hide else loader.get_card('back', 'back')
         image = image if not vertical else pygame.transform.rotate(image, 90)

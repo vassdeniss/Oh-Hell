@@ -1,18 +1,20 @@
 import pickle
 import random
 import socket
+from collections import deque
 from _thread import start_new_thread
 from constants import LOCAL_IP, PORT
-
 from Deck import Deck
 from Hand import Hand
 
 deck = Deck()
 
-player_one = Hand()
-player_two = Hand()
-player_three = Hand()
-player_four = Hand()
+player_one = Hand(0)
+player_two = Hand(1)
+player_three = Hand(2)
+player_four = Hand(3)
+
+history = deque()
 
 players = [player_one, player_two, player_three, player_four]
 
@@ -54,14 +56,19 @@ def rotate_players():
     dealer = (dealer + 1) % 4
 
 
+def get_total_takes():
+    return sum(player.taken_hands for player in players)
+
+
 has_deck_reset = False
 game_round = 1
 trump = None
 has_bidding_phase_finished = False
+total_takes = 0
 
 
 def threaded_client(connection, player):
-    global game_round, trump, has_deck_reset, dealer, has_bidding_phase_finished
+    global game_round, trump, has_deck_reset, dealer, has_bidding_phase_finished, total_takes
 
     connection.send(pickle.dumps(players[player]))
     while True:
@@ -80,7 +87,14 @@ def threaded_client(connection, player):
 
             # player rotating while playing cards
             if players[player].last_played_card is not None and player == dealer:
+                history.append((players[player], players[player].last_played_card))
                 rotate_players()
+                
+            # reset history if taken hands increase
+            takes = get_total_takes()
+            if takes > total_takes:
+                total_takes = takes
+                history.clear()
 
             if not data:
                 print("Disconnected")
@@ -103,7 +117,7 @@ def threaded_client(connection, player):
                     trump = deck.deal_card()
 
                 relative_players = (players[(player + 1) % 4], players[(player + 2) % 4], players[(player + 3) % 4])
-                connection.sendall(pickle.dumps((relative_players, cards, trump, dealer == player)))
+                connection.sendall(pickle.dumps((relative_players, cards, trump, dealer == player, history)))
         except Exception as e:
             print(e)
             break

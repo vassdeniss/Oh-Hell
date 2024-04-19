@@ -3,10 +3,12 @@ from constants import WINDOW_WIDTH
 
 
 class Hand:
-    def __init__(self):
+    def __init__(self, id):
         self.cards = []
         self.last_played_card = None
         self.bid = -1
+        self.taken_hands = 0
+        self.id = id
 
     def add_card(self, card):
         self.cards.append(card)
@@ -54,7 +56,4 @@ class Hand:
         rank_order = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, '10': 8, 'Jack': 9, 'Queen': 10,
                       'King': 11, 'Ace': 12}
 
-        def card_sort_key(card):
-            return suit_order[card.suit], rank_order[card.rank]
-
-        self.cards.sort(key=card_sort_key)
+        self.cards.sort(key=lambda card: (suit_order[card.suit], rank_order[card.rank]))
