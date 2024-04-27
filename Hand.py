@@ -17,6 +17,12 @@ class Hand:
     def remove_card(self, card):
         self.cards.remove(card)
 
+    def reset(self):
+        self.last_played_card = None
+        self.score += self.bid * self.bid + 10 if self.bid == self.taken_hands else 0
+        self.bid = -1
+        self.taken_hands = 0
+
     def playable_cards(self, first_played_card, trump):
         if not first_played_card:
             return self.cards
@@ -31,8 +37,7 @@ class Hand:
 
         return self.cards
 
-    def draw(self, surface, x, y, trump, is_dealer=False, spacing=10, vertical=False, should_hide=False,
-             first_played_card=None):
+    def draw(self, surface, x, y, trump, first_played_card, is_dealer=False, spacing=10, vertical=False, should_hide=False):
         for i, card in enumerate(self.cards):
             card.is_face_up = not should_hide
             modified_coords = \

@@ -7,7 +7,7 @@ from drawing import draw_deck, draw_info, draw_played_cards
 
 pygame.init()
 
-GREEN = (39, 119, 20)
+DARK_BLUE = (6,36,72)
 GRAY = (128, 128, 128)
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -74,10 +74,7 @@ def main():
 
         if len(cards) > 0:
             deal_round(cards, player)
-            player.last_played_card = None
-            player.score += player.bid * player.bid + 10 if player.bid == player.taken_hands else 0
-            player.bid = -1
-            player.taken_hands = 0
+            player.reset()
 
         selected_card = None
         for event in pygame.event.get():
@@ -106,7 +103,7 @@ def main():
                     if int(bid_text + event.unicode) <= total_cards_in_hand_per_round:
                         bid_text += event.unicode
 
-        window.fill(GREEN)
+        window.fill(DARK_BLUE)
 
         draw_deck(window)
 
@@ -125,13 +122,10 @@ def main():
 
         first_card = history[0][1] if history else None
 
-        player.draw(window, 300, 700, is_dealer=is_dealer, first_played_card=first_card, trump=trump)
-        player_two.draw(window, 50, 250, vertical=True, should_hide=True,
-                        first_played_card=first_card, trump=trump)
-        player_three.draw(window, 300, 50, should_hide=True, first_played_card=first_card,
-                          trump=trump)
-        player_four.draw(window, 1000, 250, vertical=True, should_hide=True,
-                         first_played_card=first_card, trump=trump)
+        player.draw(window, 300, 700, trump, first_card, is_dealer=is_dealer)
+        player_two.draw(window, 50, 250, trump, first_card, vertical=True, should_hide=True)
+        player_three.draw(window, 300, 50, trump, first_card, should_hide=True)
+        player_four.draw(window, 1000, 250, trump, first_card, vertical=True, should_hide=True)
 
         draw_info(player, window, (300, 600))
         draw_info(player_two, window, (50, 220))
