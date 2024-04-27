@@ -56,10 +56,6 @@ def rotate_players():
     dealer = (dealer + 1) % 4
 
 
-def get_total_takes():
-    return sum(player.taken_hands for player in players)
-
-
 has_deck_reset = False
 game_round = 1
 trump = None
@@ -89,12 +85,6 @@ def threaded_client(connection, player):
             if players[player].last_played_card is not None and player == dealer:
                 history.append((players[player], players[player].last_played_card))
                 rotate_players()
-                
-            # reset history if taken hands increase
-            takes = get_total_takes()
-            if takes > total_takes:
-                total_takes = takes
-                history.clear()
 
             if not data:
                 print("Disconnected")
@@ -118,6 +108,8 @@ def threaded_client(connection, player):
 
                 relative_players = (players[(player + 1) % 4], players[(player + 2) % 4], players[(player + 3) % 4])
                 connection.sendall(pickle.dumps((relative_players, cards, trump, dealer == player, history)))
+                if len(history) >= 4:
+                    history.clear()
         except Exception as e:
             print(e)
             break

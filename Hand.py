@@ -9,15 +9,13 @@ class Hand:
         self.bid = -1
         self.taken_hands = 0
         self.id = id
+        self.score = 0
 
     def add_card(self, card):
         self.cards.append(card)
 
     def remove_card(self, card):
         self.cards.remove(card)
-
-    def clear(self):
-        self.cards.clear()
 
     def playable_cards(self, first_played_card, trump):
         if not first_played_card:
@@ -57,3 +55,6 @@ class Hand:
                       'King': 11, 'Ace': 12}
 
         self.cards.sort(key=lambda card: (suit_order[card.suit], rank_order[card.rank]))
+
+    def __str__(self):
+        return f'B: {str(self.bid)}; T: {str(self.taken_hands)}; S: {str(self.score)}'

@@ -1,9 +1,9 @@
 import pygame
 import sys
-
 import loader
 from Network import Network
-from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT
+from constants import WINDOW_WIDTH, WINDOW_HEIGHT
+from drawing import draw_deck, draw_info, draw_played_cards
 
 pygame.init()
 
@@ -31,63 +31,6 @@ def deal_round(cards, hand):
     total_cards_in_hand_per_round += 1
 
 
-def draw_deck():
-    window.blit(loader.get_card('back', 'back'), (50, 50))
-    text = pygame.font.Font(None, 32).render("Deck", True, (255, 255, 255))
-    window.blit(text, (80, 20))
-
-
-def draw_played_cards(surface, cards):
-    center_x = WINDOW_WIDTH / 2 - CARD_WIDTH / 2
-    center_x_vertical = WINDOW_WIDTH / 2 - CARD_HEIGHT / 2
-    center_y = WINDOW_HEIGHT / 2 - CARD_HEIGHT / 2
-    center_y_vertical = WINDOW_HEIGHT / 2 - CARD_WIDTH / 2
-
-    player_positions = [
-        (center_x, center_y + CARD_HEIGHT / 2 + 10),  # bottom
-        (center_x_vertical - CARD_HEIGHT / 2 - 10, center_y_vertical),  # left
-        (center_x, center_y - CARD_HEIGHT / 2 - 10),  # top
-        (center_x_vertical + CARD_HEIGHT / 2 + 10, center_y_vertical)  # right
-    ]
-
-    for i, card in enumerate(cards):
-        if card is None:
-            continue
-
-        image = loader.get_card(card.rank, card.suit)
-
-        card_x, card_y = player_positions[i]
-        if i == 1:
-            image = pygame.transform.rotate(image, -90)
-        elif i == 3:
-            image = pygame.transform.rotate(image, 90)
-        elif i == 2:
-            image = pygame.transform.rotate(image, 180)
-
-        surface.blit(image, (card_x, card_y))
-
-
-def draw_info(bid, taken, surface, x, y):
-    if bid == -1:
-        return
-    text = pygame.font.Font(None, 32).render(f'Bid: {str(bid)}; Taken: {str(taken)}', True, (255, 255, 255))
-    surface.blit(text, (x, y))
-    
-
-def get_first_played_card(hands):
-    global first_played_card
-
-    if first_played_card is not None:
-        return first_played_card
-
-    for hand in hands:
-        if hand.last_played_card is not None:
-            first_played_card = hand.last_played_card
-            return first_played_card
-
-    return None
-
-
 def get_best_player(history, trump_suit):
     best_player = None
     best_player_power = 0
@@ -95,7 +38,7 @@ def get_best_player(history, trump_suit):
         (player, card) = history.popleft()
         power = card.get_power(trump_suit)
         if power > best_player_power:
-            best_player_power = power 
+            best_player_power = power
             best_player = player
     return best_player
 
@@ -123,10 +66,18 @@ def main():
         (players, cards, trump, is_dealer, history) = n.send(player)
         (player_two, player_three, player_four) = players
 
+        if len(history) >= 4:
+            player.last_played_card = None
+            best_player = get_best_player(history, trump.suit if trump is not None else backup_trump_suit)
+            if best_player.id == player.id:
+                player.taken_hands += 1
+
         if len(cards) > 0:
             deal_round(cards, player)
             player.last_played_card = None
+            player.score += player.bid * player.bid + 10 if player.bid == player.taken_hands else 0
             player.bid = -1
+            player.taken_hands = 0
 
         selected_card = None
         for event in pygame.event.get():
@@ -157,7 +108,7 @@ def main():
 
         window.fill(GREEN)
 
-        draw_deck()
+        draw_deck(window)
 
         if player.bid == -1 and is_dealer:
             pygame.draw.rect(window, GRAY, pygame.Rect(300, 600, 50, 32))
@@ -172,14 +123,7 @@ def main():
             backup_trump_suit = trump.suit
             window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
 
-        first_card = get_first_played_card((player, player_four, player_three, player_two))
-
-        if len(history) >= 4:
-            player.last_played_card = None
-            best_player = get_best_player(history, trump.suit if trump is not None else backup_trump_suit)
-            if best_player.id == player.id:
-                print('player is best')
-                player.taken_hands += 1
+        first_card = history[0][1] if history else None
 
         player.draw(window, 300, 700, is_dealer=is_dealer, first_played_card=first_card, trump=trump)
         player_two.draw(window, 50, 250, vertical=True, should_hide=True,
@@ -189,10 +133,10 @@ def main():
         player_four.draw(window, 1000, 250, vertical=True, should_hide=True,
                          first_played_card=first_card, trump=trump)
 
-        draw_info(player.bid, player.taken_hands, window, 300, 600)
-        draw_info(player_two.bid, player_two.taken_hands, window, 50, 220)
-        draw_info(player_three.bid, player_three.taken_hands, window, 300, 210)
-        draw_info(player_four.bid, player_fouraken_hands, window, 1000, 210)
+        draw_info(player, window, (300, 600))
+        draw_info(player_two, window, (50, 220))
+        draw_info(player_three, window, (300, 210))
+        draw_info(player_four, window, (1000, 210))
 
         draw_played_cards(window, (player.last_played_card, player_two.last_played_card, player_three.last_played_card,
                                    player_four.last_played_card))
