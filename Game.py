@@ -3,12 +3,12 @@ from random import randint
 
 from Deck import Deck
 from Hand import Hand
+from drawing import draw_info
 
 
 class Game:
     def __init__(self):
         self.ready = False
-        
         self.deck = Deck()
 
         player_one = Hand(0)
@@ -26,3 +26,9 @@ class Game:
     def bid(self, index, amount):
         self.players[index].bid = amount
         self.current = (self.current + 1) % 4
+
+    def draw_players_info(self, surface, player):
+        draw_info(self.players[player], surface, (300, 600))
+        draw_info(self.players[(player + 1) % 4], surface, (50, 220))
+        draw_info(self.players[(player + 2) % 4], surface, (300, 210))
+        draw_info(self.players[(player + 3) % 4], surface, (1000, 210))

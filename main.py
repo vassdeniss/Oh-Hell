@@ -67,9 +67,20 @@ def main():
         try:
             game = n.send("get;null")
         except:
-            running = False
             print("Couldn't get game")
             break
+
+        window.fill(DARK_BLUE)
+
+        if not game.ready:
+            text = pygame.font.Font(None, 32).render('Waiting for players...', True, (255, 255, 255))
+            text_rect = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+            window.blit(text, text_rect)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            pygame.display.flip()
+            continue
 
         # (players, cards, trump, is_dealer, history, winner_info) = n.send(player)
         # (player_two, player_three, player_four) = players
@@ -113,8 +124,6 @@ def main():
                     if int(bid_text + event.unicode) <= total_cards_in_hand_per_round:
                         bid_text += event.unicode
 
-        window.fill(DARK_BLUE)
-
         # draw_deck(window)
 
         #  if player.bid == -1 and is_dealer:
@@ -137,12 +146,8 @@ def main():
         # player_two.draw(window, 50, 250, trump, first_card, vertical=True, should_hide=True)
         # player_three.draw(window, 300, 50, trump, first_card, should_hide=True)
         # player_four.draw(window, 1000, 250, trump, first_card, vertical=True, should_hide=True)
-        # 
-        # draw_info(player, window, (300, 600))
-        # draw_info(player_two, window, (50, 220))
-        # draw_info(player_three, window, (300, 210))
-        # draw_info(player_four, window, (1000, 210))
-        # 
+        
+        game.draw_players_info(window, player)
         # draw_played_cards(window, (player.last_played_card, player_two.last_played_card, player_three.last_played_card,
         #                            player_four.last_played_card))
         # 
