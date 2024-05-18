@@ -14,7 +14,8 @@ def draw_info(player, surface, coords):
         return
     text = pygame.font.Font(None, 32).render(str(player), True, (255, 255, 255))
     surface.blit(text, coords)
-    
+
+
 def draw_played_cards(surface, cards):
     center_x = WINDOW_WIDTH / 2 - CARD_WIDTH / 2
     center_x_vertical = WINDOW_WIDTH / 2 - CARD_HEIGHT / 2
