@@ -3,10 +3,21 @@ import loader
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT
 
 
-def draw_deck(window):
+def draw_deck(window, deck_len):
+    if deck_len == 0:
+        return
+
     window.blit(loader.get_card('back', 'back'), (50, 50))
     text = pygame.font.Font(None, 32).render("Deck", True, (255, 255, 255))
-    window.blit(text, (80, 20))
+    text_rect = text.get_rect(center=(50 + (CARD_WIDTH / 2), 30))
+    window.blit(text, text_rect)
+
+
+def draw_players_info(surface, players, player):
+    draw_info(players[player], surface, (300, 600))
+    draw_info(players[(player + 1) % 4], surface, (50, 220))
+    draw_info(players[(player + 2) % 4], surface, (300, 210))
+    draw_info(players[(player + 3) % 4], surface, (1000, 210))
 
 
 def draw_info(player, surface, coords):

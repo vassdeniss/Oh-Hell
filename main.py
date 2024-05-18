@@ -3,7 +3,7 @@ import sys
 import loader
 from Network import Network
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT
-from drawing import draw_deck, draw_info, draw_played_cards
+from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info
 
 pygame.init()
 
@@ -124,7 +124,7 @@ def main():
                     if int(bid_text + event.unicode) <= total_cards_in_hand_per_round:
                         bid_text += event.unicode
 
-        # draw_deck(window)
+        draw_deck(window, len(game.deck))
 
         #  if player.bid == -1 and is_dealer:
         if game.does_current_player_bid(player):
@@ -147,7 +147,7 @@ def main():
         # player_three.draw(window, 300, 50, trump, first_card, should_hide=True)
         # player_four.draw(window, 1000, 250, trump, first_card, vertical=True, should_hide=True)
         
-        game.draw_players_info(window, player)
+        draw_players_info(window, game.players, player)
         # draw_played_cards(window, (player.last_played_card, player_two.last_played_card, player_three.last_played_card,
         #                            player_four.last_played_card))
         # 
