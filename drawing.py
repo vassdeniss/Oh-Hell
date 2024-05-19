@@ -27,6 +27,13 @@ def draw_info(player, surface, coords):
     surface.blit(text, coords)
 
 
+def draw_player_cards(surface, players, player, is_current):
+    players[player].draw(surface, 300, 700, is_current)
+    players[(player + 1) % 4].draw_blanks(surface, 50, 250, True)
+    players[(player + 2) % 4].draw_blanks(surface, 300, 50, False)
+    players[(player + 3) % 4].draw_blanks(surface, 1000, 250, True)
+
+
 def draw_played_cards(surface, cards):
     center_x = WINDOW_WIDTH / 2 - CARD_WIDTH / 2
     center_x_vertical = WINDOW_WIDTH / 2 - CARD_HEIGHT / 2

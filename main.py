@@ -1,9 +1,11 @@
+import pickle
+
 import pygame
 import sys
 import loader
 from Network import Network
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT
-from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info
+from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info, draw_player_cards
 
 pygame.init()
 
@@ -102,10 +104,14 @@ def main():
             # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and is_dealer and has_all_bid(
             #         (player.bid, player_two.bid, player_three.bid,
             #          player_four.bid)):
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game.is_current(player) and game.has_all_bid():
             #     for card in player.cards:
-            #         selected_card = card.handle_event()
-            #         if selected_card is not None:
-            #             break
+                # TODO: use only playable?
+                for card in game.get_cards(player):
+                    image = loader.get_card(card.rank, card.suit)
+                    selected_card = card.handle_event(image.get_rect().width, image.get_rect().height)
+                    if selected_card is not None:
+                        break
             if event.type == pygame.KEYDOWN and game.does_current_player_bid(player):
                 # if event.type == pygame.KEYDOWN and player.bid == -1:
                 if event.key == pygame.K_RETURN and bid_text:
@@ -126,22 +132,22 @@ def main():
 
         draw_deck(window, len(game.deck))
 
-        #  if player.bid == -1 and is_dealer:
         if game.does_current_player_bid(player):
             pygame.draw.rect(window, GRAY, pygame.Rect(300, 600, 50, 32))
             text_surface = pygame.font.Font(None, 32).render(bid_text, True, (255, 255, 255))
             window.blit(text_surface, (305, 605))
 
-        # if selected_card is not None:
+        if selected_card is not None:
+            n.send(f"play;{str(selected_card)}")
         #     player.last_played_card = selected_card
         #     player.remove_card(selected_card)
-        # 
+
         # if trump is not None:
         #     backup_trump_suit = trump.suit
         #     window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
         # 
-        # first_card = history[0][1] if history else None
-        # 
+
+        draw_player_cards(window, game.players, player, game.is_current(player))
         # player.draw(window, 300, 700, trump, first_card, is_dealer=is_dealer)
         # player_two.draw(window, 50, 250, trump, first_card, vertical=True, should_hide=True)
         # player_three.draw(window, 300, 50, trump, first_card, should_hide=True)

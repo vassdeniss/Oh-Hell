@@ -91,6 +91,8 @@ def threaded_client(connection, player, gameId):
                     (command, payload) = data.split(';')
                     if command == "bid":
                         game.bid(player, payload)
+                    elif command == "play":
+                        game.play(player, payload)
                     connection.sendall(pickle.dumps(game))
             else:
                 break
@@ -169,17 +171,10 @@ def threaded_client(connection, player, gameId):
     #             if sum(len(hand.cards) for hand in players) == game_round * 4 and trump is None:
     #                 trump = deck.deal_card()
     # 
-    #             relative_players = (players[(player + 1) % 4], players[(player + 2) % 4], players[(player + 3) % 4])
     #             connection.sendall(
     #                 pickle.dumps((relative_players, cards, trump, dealer == player, history, winner_info)))
     #             # if len(history) >= 4:
     #             #     history.clear()
-    #     except Exception as e:
-    #         print(e)
-    #         break
-    # 
-    # print("Lost connection")
-    # connection.close()
 
 
 current_player = 0
