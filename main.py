@@ -1,5 +1,3 @@
-import pickle
-
 import pygame
 import sys
 import loader
@@ -57,7 +55,6 @@ def main():
     loader.load_cards()
 
     n = Network()
-    # player = n.get_player()
     player = int(n.get_player())
     clock = pygame.time.Clock()
 
@@ -101,11 +98,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            # if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and is_dealer and has_all_bid(
-            #         (player.bid, player_two.bid, player_three.bid,
-            #          player_four.bid)):
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game.is_current(player) and game.has_all_bid():
-            #     for card in player.cards:
                 # TODO: use only playable?
                 for card in game.get_cards(player):
                     image = loader.get_card(card.rank, card.suit)
@@ -113,7 +106,6 @@ def main():
                     if selected_card is not None:
                         break
             if event.type == pygame.KEYDOWN and game.does_current_player_bid(player):
-                # if event.type == pygame.KEYDOWN and player.bid == -1:
                 if event.key == pygame.K_RETURN and bid_text:
                     # if (is_last_bid((player.bid, player_two.bid, player_three.bid, player_four.bid))
                     #         and total_cards_in_hand_per_round == 5):
@@ -122,7 +114,6 @@ def main():
                     #         continue
 
                     n.send(f"bid;{bid_text}")
-                    # player.bid = int(bid_text)
                     bid_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     bid_text = bid_text[:-1]
@@ -148,15 +139,8 @@ def main():
         # 
 
         draw_player_cards(window, game.players, player, game.is_current(player))
-        # player.draw(window, 300, 700, trump, first_card, is_dealer=is_dealer)
-        # player_two.draw(window, 50, 250, trump, first_card, vertical=True, should_hide=True)
-        # player_three.draw(window, 300, 50, trump, first_card, should_hide=True)
-        # player_four.draw(window, 1000, 250, trump, first_card, vertical=True, should_hide=True)
-        
         draw_players_info(window, game.players, player)
-        # draw_played_cards(window, (player.last_played_card, player_two.last_played_card, player_three.last_played_card,
-        #                            player_four.last_played_card))
-        # 
+        draw_played_cards(window, game.get_played_cards(player))
         # if winner_info is not None:
         #     text = pygame.font.Font(None, 32).render(f'Winner is: Player {winner_info[0]} with {winner_info[1]} score', True, (255, 255, 255))
         #     text_rect = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))

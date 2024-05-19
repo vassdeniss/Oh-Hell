@@ -30,6 +30,10 @@ class Game:
     def get_cards(self, player):
         return self.players[player]
 
+    def get_played_cards(self, player):
+        return (self.players[player].last_played_card, self.players[(player + 1) % 4].last_played_card, self.players[(player + 2) % 4].last_played_card,
+                self.players[(player + 3) % 4].last_played_card)
+
     def does_current_player_bid(self, player):
         return self.current == player and self.players[player].bid == -1
 
