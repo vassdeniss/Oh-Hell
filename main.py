@@ -62,14 +62,24 @@ def main():
 
     while running:
         clock.tick(60)
+        window.fill(DARK_BLUE)
+
+        if player == -1:
+            text = pygame.font.Font(None, 32).render('Waiting for server...', True, (255, 255, 255))
+            text_rect = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+            window.blit(text, text_rect)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+            pygame.display.flip()
+            player = int(n.connect())
+            continue
 
         try:
             game = n.send("get;null")
         except:
             print("Couldn't get game")
             break
-
-        window.fill(DARK_BLUE)
 
         if not game.ready:
             text = pygame.font.Font(None, 32).render('Waiting for players...', True, (255, 255, 255))
