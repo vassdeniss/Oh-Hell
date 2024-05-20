@@ -79,7 +79,6 @@ def threaded_client(connection, player, gameId):
     global game_round, trump, has_deck_reset, dealer, has_bidding_phase_finished, total_takes, last_round_repeats, winner_info, old_total_takes, idCount
     connection.send(str.encode(str(player)))
 
-    # connection.send(pickle.dumps(players[player]))
     while True:
         try:
             data = connection.recv(4096).decode()
@@ -93,6 +92,7 @@ def threaded_client(connection, player, gameId):
                         game.bid(player, payload)
                     elif command == "play":
                         game.play(player, payload)
+                    game.check_end_round()
                     connection.sendall(pickle.dumps(game))
             else:
                 break
@@ -126,21 +126,7 @@ def threaded_client(connection, player, gameId):
     #         #     relative_players = (players[(player + 1) % 4], players[(player + 2) % 4], players[(player + 3) % 4])
     #         #     connection.sendall(
     #         #         pickle.dumps((relative_players, [], trump, dealer == player, history, winner_info)))
-    #         #     continue
-    # 
-    #         # player rotating while bidding
-    #         if players[player].bid != -1 and player == dealer and not has_all_bid():
-    #             rotate_players()
-    # 
-    #         # extra player rotation when bidding ends
-    #         if has_all_bid() and not has_bidding_phase_finished:
-    #             has_bidding_phase_finished = True
-    #             rotate_players()
-    # 
-    #         # player rotating while playing cards
-    #         if players[player].last_played_card is not None and player == dealer:
-    #             history.append((players[player], players[player].last_played_card))
-    #             rotate_players()
+    #         #     continu
     # 
     #         if not data:
     #             print("Disconnected")
@@ -157,19 +143,6 @@ def threaded_client(connection, player, gameId):
     #                         max_score = max(scores)
     #                         winner_info = (scores.index(max_score) + 1, max_score)
     #                         continue
-    #                     
-    #                     deck.reset()
-    #                     has_deck_reset = True
-    #                     trump = None
-    # 
-    #                     has_bidding_phase_finished = False
-    #                     for pl in players:
-    #                         pl.bid = -1
-    #                 for _ in range(game_round):
-    #                     cards.append(deck.deal_card())
-    # 
-    #             if sum(len(hand.cards) for hand in players) == game_round * 4 and trump is None:
-    #                 trump = deck.deal_card()
     # 
     #             connection.sendall(
     #                 pickle.dumps((relative_players, cards, trump, dealer == player, history, winner_info)))
@@ -198,6 +171,5 @@ while True:
         games[gameId].ready = True
         p = 3
 
-    #start_new_thread(threaded_client, (connection, current_player, 0))
     start_new_thread(threaded_client, (connection, p, gameId))
     current_player += 1

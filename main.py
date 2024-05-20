@@ -99,7 +99,7 @@ def main():
         #     best_player = get_best_player(history, trump.suit if trump is not None else backup_trump_suit)
         #     if best_player.id == player.id:
         #         player.taken_hands += 1
-        # 
+
         # if len(cards) > 0:
         #     deal_round(cards, player)
         #     player.reset()
@@ -128,7 +128,7 @@ def main():
                 elif event.key == pygame.K_BACKSPACE:
                     bid_text = bid_text[:-1]
                 elif bid_text != "0" and event.unicode.isdigit():
-                    if int(bid_text + event.unicode) <= total_cards_in_hand_per_round:
+                    if int(bid_text + event.unicode) <= game.round:
                         bid_text += event.unicode
 
         draw_deck(window, len(game.deck))

@@ -11,6 +11,7 @@ class Game:
         self.ready = False
         self.deck = Deck()
         self.trump = None
+        self.round = 1
 
         player_one = Hand(0)
         player_two = Hand(1)
@@ -31,7 +32,8 @@ class Game:
         return self.players[player]
 
     def get_played_cards(self, player):
-        return (self.players[player].last_played_card, self.players[(player + 1) % 4].last_played_card, self.players[(player + 2) % 4].last_played_card,
+        return (self.players[player].last_played_card, self.players[(player + 1) % 4].last_played_card,
+                self.players[(player + 2) % 4].last_played_card,
                 self.players[(player + 3) % 4].last_played_card)
 
     def does_current_player_bid(self, player):
@@ -54,6 +56,18 @@ class Game:
         self.players[player].set_unplayable_cards()
         self.players[player].update_card_indices()
         self.current = (self.current + 1) % 4
+
+    def check_end_round(self):
+        if all(len(player) == 0 for player in self.players):
+            self.history.clear()
+            self.deck.reset()
+            self.round += 1
+            for player in self.players:
+                for _ in range(self.round):
+                    player.add_card(self.deck.deal_card())
+                player.sort_cards_by_suit_and_rank()
+                player.reset()
+            self.trump = self.deck.deal_card()
 
     def initial_deal(self):
         for hand in self.players:

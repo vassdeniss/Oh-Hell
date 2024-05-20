@@ -12,6 +12,9 @@ class Hand:
         self.id = id
         self.score = 0
 
+    def __len__(self):
+        return len(self.cards)
+
     def __iter__(self):
         self._current_index = 0
         return self
@@ -44,7 +47,7 @@ class Hand:
 
     def update_playable_cards(self, first_played_card):
         self.playable_cards = self.get_playable_cards(first_played_card)
-        
+
     def update_card_indices(self):
         for i, card in enumerate(self.cards):
             card.index = i
