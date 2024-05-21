@@ -1,24 +1,9 @@
 import pickle
-import random
 import socket
-from collections import deque
 from _thread import start_new_thread
 
 from Game import Game
 from constants import LOCAL_IP, PORT
-from Deck import Deck
-from Hand import Hand
-
-deck = Deck()
-
-player_one = Hand(0)
-player_two = Hand(1)
-player_three = Hand(2)
-player_four = Hand(3)
-
-history = deque()
-
-players = [player_one, player_two, player_three, player_four]
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -30,51 +15,12 @@ except socket.error as err:
 s.listen(4)
 print("Server started, waiting for connections...")
 
-
-def initial_deal():
-    global trump
-
-    for i in range(game_round):
-        for hand in players:
-            hand.add_card(deck.deal_card())
-    trump = deck.deal_card()
-
-
-def is_round_end():
-    global has_deck_reset
-
-    for hand in players:
-        if len(hand.cards) > 0:
-            has_deck_reset = False
-            return False
-    return True
-
-
-def has_all_bid():
-    return all(player.bid != -1 for player in players)
-
-
-def rotate_players():
-    global dealer
-    dealer = (dealer + 1) % 4
-
-
-has_deck_reset = False
-game_round = 1
-# last_round_repeats = 4
-trump = None
-has_bidding_phase_finished = False
-total_takes = 0
-winner_info = None
-old_total_takes = 0
-
-connected = set()
 games = {}
 idCount = 0
 
 
 def threaded_client(connection, player, gameId):
-    global game_round, trump, has_deck_reset, dealer, has_bidding_phase_finished, total_takes, last_round_repeats, winner_info, old_total_takes, idCount
+    global idCount
     connection.send(str.encode(str(player)))
 
     while True:
@@ -97,22 +43,18 @@ def threaded_client(connection, player, gameId):
                 break
         except:
             break
-    
+
     print("Lost connection...")
     try:
         del games[gameId]
         print("Closing game", gameId)
     except:
         pass
-        
+
     idCount -= 1
     connection.close()
-    
-        
+
     #     try:
-    #         data = pickle.loads(connection.recv(4048))
-    #         players[player] = data
-    # 
     #         # update takes
     #         old_total_takes = total_takes
     #         total_takes = sum(player.taken_hands for player in players)
@@ -142,13 +84,8 @@ def threaded_client(connection, player, gameId):
     #                         max_score = max(scores)
     #                         winner_info = (scores.index(max_score) + 1, max_score)
     #                         continue
-    # 
-    #             connection.sendall(
-    #                 pickle.dumps((relative_players, cards, trump, dealer == player, history, winner_info)))
 
 
-# initial_deal()
-dealer = random.randint(0, 3)
 while True:
     connection, address = s.accept()
     print(f"Connected to {address}")
