@@ -3,7 +3,6 @@ from random import randint
 
 from Deck import Deck
 from Hand import Hand
-from drawing import draw_info
 
 
 class Game:
@@ -12,16 +11,8 @@ class Game:
         self.deck = Deck()
         self.trump = None
         self.round = 1
-
-        player_one = Hand(0)
-        player_two = Hand(1)
-        player_three = Hand(2)
-        player_four = Hand(3)
-
-        self.players = [player_one, player_two, player_three, player_four]
-
+        self.players = [Hand(0), Hand(1), Hand(2), Hand(3)]
         self.initial_deal()
-
         self.history = deque()
         self.current = randint(0, 3)
 
@@ -43,7 +34,7 @@ class Game:
         return all(player.bid != -1 for player in self.players)
 
     def bid(self, index, amount):
-        self.players[index].bid = amount
+        self.players[index].bid = int(amount)
         self.current = (self.current + 1) % 4
 
     def play(self, player, card):
@@ -56,6 +47,14 @@ class Game:
         self.players[player].set_unplayable_cards()
         self.players[player].update_card_indices()
         self.current = (self.current + 1) % 4
+
+    def check_for_takes(self):
+        if len(self.history) >= 4:
+            for player in self.players:
+                player.last_played_card = None
+                player.update_playable_cards()
+            index = self._get_best_player()
+            self.players[index].taken_hands += 1
 
     def check_end_round(self):
         if all(len(player) == 0 for player in self.players):
@@ -73,3 +72,14 @@ class Game:
         for hand in self.players:
             hand.add_card(self.deck.deal_card())
         self.trump = self.deck.deal_card()
+
+    def _get_best_player(self):
+        best_player = None
+        best_player_power = 0
+        while self.history:
+            (player, card) = self.history.popleft()
+            power = card.get_power(self.trump.suit)
+            if power > best_player_power:
+                best_player_power = power
+                best_player = player
+        return best_player

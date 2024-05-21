@@ -37,8 +37,6 @@ def initial_deal():
     for i in range(game_round):
         for hand in players:
             hand.add_card(deck.deal_card())
-    # for hand in players:
-    #     hand.add_card(deck.deal_card())
     trump = deck.deal_card()
 
 
@@ -92,6 +90,7 @@ def threaded_client(connection, player, gameId):
                         game.bid(player, payload)
                     elif command == "play":
                         game.play(player, payload)
+                    game.check_for_takes()
                     game.check_end_round()
                     connection.sendall(pickle.dumps(game))
             else:
@@ -146,12 +145,9 @@ def threaded_client(connection, player, gameId):
     # 
     #             connection.sendall(
     #                 pickle.dumps((relative_players, cards, trump, dealer == player, history, winner_info)))
-    #             # if len(history) >= 4:
-    #             #     history.clear()
 
 
-current_player = 0
-initial_deal()
+# initial_deal()
 dealer = random.randint(0, 3)
 while True:
     connection, address = s.accept()
@@ -172,4 +168,3 @@ while True:
         p = 3
 
     start_new_thread(threaded_client, (connection, p, gameId))
-    current_player += 1
