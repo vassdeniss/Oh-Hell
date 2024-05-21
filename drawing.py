@@ -27,6 +27,9 @@ def draw_info(player, surface, coords):
     surface.blit(text, coords)
 
 
+def draw_trump(window, trump):
+    window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
+
 def draw_player_cards(surface, players, player, is_current):
     players[player].draw(surface, 300, 700, is_current)
     players[(player + 1) % 4].draw_blanks(surface, 50, 250, True)

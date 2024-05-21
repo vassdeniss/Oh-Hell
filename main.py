@@ -3,7 +3,7 @@ import sys
 import loader
 from Network import Network
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT
-from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info, draw_player_cards
+from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info, draw_player_cards, draw_trump
 
 pygame.init()
 
@@ -91,19 +91,12 @@ def main():
             pygame.display.flip()
             continue
 
-        # (players, cards, trump, is_dealer, history, winner_info) = n.send(player)
-        # (player_two, player_three, player_four) = players
-
         # if len(history) >= 4:
         #     player.last_played_card = None
         #     best_player = get_best_player(history, trump.suit if trump is not None else backup_trump_suit)
         #     if best_player.id == player.id:
         #         player.taken_hands += 1
 
-        # if len(cards) > 0:
-        #     deal_round(cards, player)
-        #     player.reset()
-        # 
         selected_card = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -127,9 +120,8 @@ def main():
                     bid_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     bid_text = bid_text[:-1]
-                elif bid_text != "0" and event.unicode.isdigit():
-                    if int(bid_text + event.unicode) <= game.round:
-                        bid_text += event.unicode
+                elif bid_text != "0" and event.unicode.isdigit() and int(bid_text + event.unicode) <= game.round:
+                    bid_text += event.unicode
 
         draw_deck(window, len(game.deck))
 
@@ -140,14 +132,8 @@ def main():
 
         if selected_card is not None:
             n.send(f"play;{str(selected_card)}")
-        #     player.last_played_card = selected_card
-        #     player.remove_card(selected_card)
 
-        # if trump is not None:
-        #     backup_trump_suit = trump.suit
-        #     window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
-        # 
-
+        draw_trump(window, game.trump)
         draw_player_cards(window, game.players, player, game.is_current(player))
         draw_players_info(window, game.players, player)
         draw_played_cards(window, game.get_played_cards(player))

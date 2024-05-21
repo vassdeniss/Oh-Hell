@@ -22,10 +22,10 @@ def load_cards():
         image = pygame.image.load(os.path.join('./cards', filename)).convert_alpha()
         scaled = pygame.transform.scale(image, (CARD_WIDTH, CARD_HEIGHT))
         cards[card_name] = scaled
-        dark_cards[card_name] = make_dark_card(scaled.copy())
+        dark_cards[card_name] = _make_dark_card(scaled.copy())
 
 
-def make_dark_card(card):
+def _make_dark_card(card):
     dark = pygame.Surface((card.get_width(), card.get_height()), flags=pygame.SRCALPHA)
     dark.fill((0, 0, 0, 70))
     card.blit(dark, (0, 0))
