@@ -103,9 +103,10 @@ def main():
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game.is_current(player) and game.has_all_bid():
                 # TODO: use only playable?
-                for card in game.get_cards(player):
+                cards = game.get_cards(player)
+                for i, card in enumerate(cards):
                     image = loader.get_card(card.rank, card.suit)
-                    selected_card = card.handle_event(image.get_rect().width, image.get_rect().height)
+                    selected_card = card.handle_event(image.get_rect().width, image.get_rect().height, i, i == len(cards) - 1)
                     if selected_card is not None:
                         break
             if event.type == pygame.KEYDOWN and game.does_current_player_bid(player):

@@ -42,10 +42,9 @@ class Game:
 
         self.players[player].last_played_card = card
         self.players[player].remove_card(card)
-        self.history.append((self.players[player], self.players[player].last_played_card))
-        self.players[player].update_playable_cards(self.history[0][1])
-        self.players[player].set_unplayable_cards()
-        self.players[player].update_card_indices()
+        self.history.append((player, self.players[player].last_played_card))
+        for player in self.players:
+            player.update_playable_cards(self.history[0][1])
         self.current = (self.current + 1) % 4
 
     def check_for_takes(self):
@@ -65,6 +64,7 @@ class Game:
                 for _ in range(self.round):
                     player.add_card(self.deck.deal_card())
                 player.sort_cards_by_suit_and_rank()
+                player.update_playable_cards()
                 player.reset()
             self.trump = self.deck.deal_card()
 

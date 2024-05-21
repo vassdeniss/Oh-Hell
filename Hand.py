@@ -1,5 +1,5 @@
 import pygame.font
-from constants import WINDOW_WIDTH
+from constants import WINDOW_WIDTH, DEFAULT_SPACING
 
 
 class Hand:
@@ -33,7 +33,6 @@ class Hand:
                 return card
 
     def add_card(self, card):
-        card.index = len(self.cards)
         self.cards.append(card)
 
     def remove_card(self, card):
@@ -45,20 +44,13 @@ class Hand:
         self.bid = -1
         self.taken_hands = 0
 
-    def update_playable_cards(self, first_played_card):
+    def update_playable_cards(self, first_played_card=None):
         self.playable_cards = self.get_playable_cards(first_played_card)
-
-    def update_card_indices(self):
-        for i, card in enumerate(self.cards):
-            card.index = i
-
-    def set_unplayable_cards(self):
         for card in self.cards:
-            if card not in self.playable_cards:
-                card.is_dark = True
+            card.is_dark = True if card not in self.playable_cards else False
 
     def get_playable_cards(self, first_played_card=None):
-        if not first_played_card:
+        if not first_played_card or len(self.cards) == 0:
             return self.cards
 
         suit_match = [card for card in self.cards if card.suit == first_played_card.suit]
@@ -67,9 +59,9 @@ class Hand:
 
         return self.cards
 
-    def draw(self, surface, x, y, is_dealer, spacing=10):
+    def draw(self, surface, x, y, is_dealer, spacing=DEFAULT_SPACING):
         for i, card in enumerate(self.cards):
-            card.draw(surface, (x + i * (30 + spacing), y), is_dealer)
+            card.draw(surface, (x + i * spacing, y), is_dealer, i == len(self.cards) - 1)
         if is_dealer:
             text = pygame.font.Font(None, 32).render("Your turn" if self.bid != -1 else "Enter bid", True,
                                                      (255, 255, 255))
