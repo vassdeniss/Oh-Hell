@@ -4,13 +4,14 @@ from constants import WINDOW_WIDTH, WINDOW_HEIGHT, CARD_WIDTH, CARD_HEIGHT
 
 
 def draw_deck(window, deck_len):
+    text = pygame.font.Font(None, 32).render("Deck", True, (255, 255, 255))
+    text_rect = text.get_rect(center=(50 + (CARD_WIDTH / 2), 30))
+    window.blit(text, text_rect)
+    
     if deck_len == 0:
         return
 
     window.blit(loader.get_card('back', 'back'), (50, 50))
-    text = pygame.font.Font(None, 32).render("Deck", True, (255, 255, 255))
-    text_rect = text.get_rect(center=(50 + (CARD_WIDTH / 2), 30))
-    window.blit(text, text_rect)
 
 
 def draw_players_info(surface, players, player):
@@ -28,7 +29,11 @@ def draw_info(player, surface, coords):
 
 
 def draw_trump(window, trump):
+    if trump is None:
+        return
+
     window.blit(loader.get_card(trump.rank, trump.suit), (100, 50))
+
 
 def draw_player_cards(surface, players, player, is_current):
     players[player].draw(surface, 300, 700, is_current)

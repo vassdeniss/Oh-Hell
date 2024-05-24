@@ -10,7 +10,7 @@ class Game:
         self.ready = False
         self.deck = Deck()
         self.trump = None
-        self.round = 1
+        self.round = 13
         self.players = [Hand(0), Hand(1), Hand(2), Hand(3)]
         self.initial_deal()
         self.history = deque()
@@ -66,11 +66,12 @@ class Game:
                 player.sort_cards_by_suit_and_rank()
                 player.update_playable_cards()
                 player.reset()
-            self.trump = self.deck.deal_card()
+            self.trump = self.deck.deal_card() if self.round < 13 else None
 
     def initial_deal(self):
-        for hand in self.players:
-            hand.add_card(self.deck.deal_card())
+        for _ in range(self.round):
+            for hand in self.players:
+                hand.add_card(self.deck.deal_card())
         self.trump = self.deck.deal_card()
 
     def _get_best_player(self):
