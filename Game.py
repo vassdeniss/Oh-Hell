@@ -9,12 +9,14 @@ class Game:
     def __init__(self):
         self.ready = False
         self.deck = Deck()
+        self.round = 4
+        self.round_repeats = 0
+        self.players = [Hand(0, self.deck.deal_card()), Hand(1, self.deck.deal_card()), Hand(2, self.deck.deal_card()), Hand(3, self.deck.deal_card())]
+        self.trump = self.deck.deal_card()
         self.trump = None
-        self.round = 13
-        self.players = [Hand(0), Hand(1), Hand(2), Hand(3)]
-        self.initial_deal()
         self.history = deque()
         self.current = randint(0, 3)
+        self.winner = None
 
     def is_current(self, player):
         return self.current == player
@@ -59,7 +61,8 @@ class Game:
         if all(len(player) == 0 for player in self.players):
             self.history.clear()
             self.deck.reset()
-            self.round += 1
+            self.round += 1 if self.round < 13 else 0
+            self.round_repeats += 1 if self.round == 13 else 0
             for player in self.players:
                 for _ in range(self.round):
                     player.add_card(self.deck.deal_card())
@@ -68,11 +71,11 @@ class Game:
                 player.reset()
             self.trump = self.deck.deal_card() if self.round < 13 else None
 
-    def initial_deal(self):
-        for _ in range(self.round):
-            for hand in self.players:
-                hand.add_card(self.deck.deal_card())
-        self.trump = self.deck.deal_card()
+    def check_game_over(self):
+        if self.round_repeats == 5:
+            scores = [player.score for player in self.players]
+            max_score = max(scores)
+            self.winner = f'Winner is: Player {scores.index(max_score) + 1} with {max_score} score'
 
     def _get_best_player(self):
         best_player = None

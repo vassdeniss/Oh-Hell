@@ -38,6 +38,7 @@ def threaded_client(connection, player, gameId):
                         game.play(player, payload)
                     game.check_for_takes()
                     game.check_end_round()
+                    game.check_game_over()
                     connection.sendall(pickle.dumps(game))
             else:
                 break

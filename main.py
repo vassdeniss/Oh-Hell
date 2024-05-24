@@ -3,7 +3,8 @@ import sys
 import loader
 from Network import Network
 from constants import WINDOW_WIDTH, WINDOW_HEIGHT
-from drawing import draw_deck, draw_info, draw_played_cards, draw_players_info, draw_player_cards, draw_trump
+from drawing import draw_deck, draw_played_cards, draw_players_info, draw_player_cards, draw_trump, \
+    draw_winner
 
 pygame.init()
 
@@ -13,44 +14,11 @@ GRAY = (128, 128, 128)
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Oh Hell!")
 
-
-def has_all_bid(bids):
-    return all(bid != -1 for bid in bids)
-
-
-def is_last_bid(bids):
-    return bids[0] == -1 and all(bid != -1 for bid in bids[1:])
-
-
-def deal_round(cards, hand):
-    global total_cards_in_hand_per_round
-
-    for i in range(len(cards)):
-        hand.add_card(cards[i])
-    hand.sort_cards_by_suit_and_rank()
-    total_cards_in_hand_per_round += 1 if total_cards_in_hand_per_round < 13 else 0
-
-
-def get_best_player(history, trump_suit):
-    best_player = None
-    best_player_power = 0
-    while history:
-        (player, card) = history.popleft()
-        power = card.get_power(trump_suit)
-        if power > best_player_power:
-            best_player_power = power
-            best_player = player
-    return best_player
-
-
 bid_text = ''
-total_cards_in_hand_per_round = 1
-first_played_card = None
-backup_trump_suit = None
 
 
 def main():
-    global bid_text, backup_trump_suit
+    global bid_text
 
     loader.load_cards()
 
@@ -91,12 +59,6 @@ def main():
             pygame.display.flip()
             continue
 
-        # if len(history) >= 4:
-        #     player.last_played_card = None
-        #     best_player = get_best_player(history, trump.suit if trump is not None else backup_trump_suit)
-        #     if best_player.id == player.id:
-        #         player.taken_hands += 1
-
         selected_card = None
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -124,6 +86,11 @@ def main():
                 elif bid_text != "0" and event.unicode.isdigit() and int(bid_text + event.unicode) <= game.round:
                     bid_text += event.unicode
 
+        if game.winner is not None:
+            draw_winner(window, game.winner)
+            pygame.display.flip()
+            continue
+
         draw_deck(window, len(game.deck))
 
         if game.does_current_player_bid(player):
@@ -138,10 +105,6 @@ def main():
         draw_player_cards(window, game.players, player, game.is_current(player))
         draw_players_info(window, game.players, player)
         draw_played_cards(window, game.get_played_cards(player))
-        # if winner_info is not None:
-        #     text = pygame.font.Font(None, 32).render(f'Winner is: Player {winner_info[0]} with {winner_info[1]} score', True, (255, 255, 255))
-        #     text_rect = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
-        #     window.blit(text, text_rect)
 
         pygame.display.flip()
 

@@ -42,6 +42,12 @@ def draw_player_cards(surface, players, player, is_current):
     players[(player + 3) % 4].draw_blanks(surface, 1000, 250, True)
 
 
+def draw_winner(surface, message):
+    text = pygame.font.Font(None, 32).render(message, True, (255, 255, 255))
+    text_rect = text.get_rect(center=(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
+    surface.blit(text, text_rect)
+
+
 def draw_played_cards(surface, cards):
     center_x = WINDOW_WIDTH / 2 - CARD_WIDTH / 2
     center_x_vertical = WINDOW_WIDTH / 2 - CARD_HEIGHT / 2
