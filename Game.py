@@ -9,11 +9,10 @@ class Game:
     def __init__(self):
         self.ready = False
         self.deck = Deck()
-        self.round = 4
+        self.round = 1
         self.round_repeats = 0
         self.players = [Hand(0, self.deck.deal_card()), Hand(1, self.deck.deal_card()), Hand(2, self.deck.deal_card()), Hand(3, self.deck.deal_card())]
         self.trump = self.deck.deal_card()
-        self.trump = None
         self.history = deque()
         self.current = randint(0, 3)
         self.winner = None
@@ -56,6 +55,7 @@ class Game:
                 player.update_playable_cards()
             index = self._get_best_player()
             self.players[index].taken_hands += 1
+            self.current = index
 
     def check_end_round(self):
         if all(len(player) == 0 for player in self.players):
