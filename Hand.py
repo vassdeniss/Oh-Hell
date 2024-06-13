@@ -2,7 +2,7 @@ import pygame.font
 from constants import WINDOW_WIDTH, DEFAULT_SPACING
 
 
-class Hand:    
+class Hand:
     def __init__(self, id, starting_card):
         self.cards = [starting_card]
         self.playable_cards = self.get_playable_cards()

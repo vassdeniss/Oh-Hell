@@ -66,17 +66,16 @@ def main():
                         break
             if event.type == pygame.KEYDOWN and game.does_current_player_bid(player):
                 if event.key == pygame.K_RETURN and bid_text:
-                    # if (is_last_bid((player.bid, player_two.bid, player_three.bid, player_four.bid))
-                    #         and total_cards_in_hand_per_round == 5):
-                    #     total = sum((player_two.bid, player_three.bid, player_four.bid))
-                    #     if int(bid_text) + total == total_cards_in_hand_per_round:
-                    #         continue
-
                     n.send(f"bid;{bid_text}")
                     bid_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     bid_text = bid_text[:-1]
                 elif bid_text != "0" and event.unicode.isdigit() and int(bid_text + event.unicode) <= game.round:
+                    total_number = int(bid_text + event.unicode)
+                    if total_number > game.round:
+                        continue
+                    if 5 <= game.round == total_number + game.get_total_bids(player): 
+                        continue
                     bid_text += event.unicode
 
         if game.winner is not None:

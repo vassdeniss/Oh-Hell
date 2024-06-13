@@ -19,7 +19,7 @@ def create_deck():
 class Deck:
     def __init__(self):
         self.cards = create_deck()
-        
+
     def __len__(self):
         return len(self.cards)
 

@@ -33,6 +33,12 @@ class Game:
 
     def has_all_bid(self):
         return all(player.bid != -1 for player in self.players)
+    
+    def get_total_bids(self, player):
+        return sum(player.bid for player in self.players[:player] + self.players[player + 1:])
+    
+    def is_last_bid(self, player):
+        return self.players[player].bid == -1 and all(player.bid != -1 for player in self.players[:player] + self.players[player + 1:])
 
     def bid(self, index, amount):
         self.players[index].bid = int(amount)
