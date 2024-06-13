@@ -7,6 +7,7 @@ from drawing import draw_deck, draw_played_cards, draw_players_info, draw_player
     draw_winner
 
 pygame.init()
+pygame.mixer.init()
 
 DARK_BLUE = (6, 36, 72)
 GRAY = (128, 128, 128)
@@ -15,6 +16,7 @@ window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Oh Hell!")
 
 bid_text = ''
+play_card = pygame.mixer.Sound("./sounds/play_card.wav")
 
 
 def main():
@@ -52,12 +54,14 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game.is_current(player) and game.has_all_bid():
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and game.is_current(
+                    player) and game.has_all_bid():
                 # TODO: use only playable?
                 cards = game.get_cards(player)
                 for i, card in enumerate(cards):
                     image = loader.get_card(card.rank, card.suit)
-                    selected_card = card.handle_event(image.get_rect().width, image.get_rect().height, i, i == len(cards) - 1)
+                    selected_card = card.handle_event(image.get_rect().width, image.get_rect().height, i,
+                                                      i == len(cards) - 1)
                     if selected_card is not None:
                         break
             if event.type == pygame.KEYDOWN and game.does_current_player_bid(player):
@@ -89,6 +93,7 @@ def main():
 
         if selected_card is not None:
             n.send(f"play;{str(selected_card)}")
+            play_card.play()
 
         draw_trump(window, game.trump)
         draw_player_cards(window, game.players, player, game.is_current(player))

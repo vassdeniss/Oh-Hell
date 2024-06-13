@@ -12,7 +12,7 @@ try:
 except socket.error as err:
     str(err)
 
-s.listen(4)
+s.listen()
 print("Server started, waiting for connections...")
 
 games = {}
@@ -54,37 +54,6 @@ def threaded_client(connection, player, gameId):
 
     idCount -= 1
     connection.close()
-
-    #     try:
-    #         # update takes
-    #         old_total_takes = total_takes
-    #         total_takes = sum(player.taken_hands for player in players)
-    #         if total_takes > old_total_takes:
-    #             history.clear()
-    #         
-    # 
-    #         # game over
-    #         # if winner_info:
-    #         #     relative_players = (players[(player + 1) % 4], players[(player + 2) % 4], players[(player + 3) % 4])
-    #         #     connection.sendall(
-    #         #         pickle.dumps((relative_players, [], trump, dealer == player, history, winner_info)))
-    #         #     continu
-    # 
-    #         if not data:
-    #             print("Disconnected")
-    #             break
-    #         else:
-    #             cards = []
-    #             if is_round_end():
-    #                 if not has_deck_reset:
-    #                     game_round += 1 if game_round < 13 else 0
-    #                     if game_round == 13:
-    #                         # last_round_repeats += 1
-    #                         # if last_round_repeats == 5:
-    #                         scores = [p.score for p in players]
-    #                         max_score = max(scores)
-    #                         winner_info = (scores.index(max_score) + 1, max_score)
-    #                         continue
 
 
 while True:
