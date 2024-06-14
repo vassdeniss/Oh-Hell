@@ -11,7 +11,8 @@ class Game:
         self.deck = Deck()
         self.round = 1
         self.round_repeats = 0
-        self.players = [Hand(0, self.deck.deal_card()), Hand(1, self.deck.deal_card()), Hand(2, self.deck.deal_card()), Hand(3, self.deck.deal_card())]
+        self.players = [Hand(0, self.deck.deal_card()), Hand(1, self.deck.deal_card()), Hand(2, self.deck.deal_card()),
+                        Hand(3, self.deck.deal_card())]
         self.trump = self.deck.deal_card()
         self.history = deque()
         self.current = randint(0, 3)
@@ -33,12 +34,13 @@ class Game:
 
     def has_all_bid(self):
         return all(player.bid != -1 for player in self.players)
-    
+
     def get_total_bids(self, player):
         return sum(player.bid for player in self.players[:player] + self.players[player + 1:])
-    
+
     def is_last_bid(self, player):
-        return self.players[player].bid == -1 and all(player.bid != -1 for player in self.players[:player] + self.players[player + 1:])
+        return self.players[player].bid == -1 and all(
+            player.bid != -1 for player in self.players[:player] + self.players[player + 1:])
 
     def bid(self, index, amount):
         self.players[index].bid = int(amount)
